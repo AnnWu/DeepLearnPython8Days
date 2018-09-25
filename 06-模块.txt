@@ -1,0 +1,48 @@
+﻿# 模块
+模块是一个保存python代码的文件
+
+## import module1,module2
+from A import func1,class1
+
+
+## from modelname import *
+从模块中导入一个指定的部分到当前命名空间中。
+
+## 定位模块
+导入模块时，当前目录找不到，则在shell变量PYTHONPATH下的每一个目录，如果还找不到，Python会查看默认路径，Unix下默认路径一般为 /usr/local/lib/python/
+模块搜索路径存储在system模块的sys.path变量中
+
+
+## 命名空间和作用域
+要修改全局变量  要加global 变量名
+dir()函数，字符串列表，返回类的属性和方法
+
+globals()和locals()函数可以用来返回全局、局部命名空间里的名字，返回类型为字典
+
+## Python中的包
+包是一个分层次的文件目录结构，定义类一个由模块及子包，和子包下的子包等组成的python的应用环境
+
+## 模块发布
+1、mymodule目录结构体如下：
+.
+|--setup.py
+|--suba
+|  |--aa.py
+   |--bb.py
+   |--_init_.py
+|--subb
+|  |--cc.py
+   |--dd.py
+   |--_init_.py
+（Linux下使用subl . 可打开当前目录的文件）   
+2.编写setup.py ， py_modules需指明所需包
+from distutils.core import setup
+setup (me="xwp",version="1.0",description="xwp's module",author="www",py_modules=["auba.aa","auba.bb","aubb.cc","aubb.dd"])
+
+3. 构建模块
+执行python setup.py build
+4.生成发布压缩包
+执行 python setup.py sdist
+打包后，生成最终发布压缩包 xwp-1.0.tar.gz
+
+5.解压后 执行python setup.py  install 即可安装

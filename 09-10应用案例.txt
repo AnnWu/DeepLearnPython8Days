@@ -1,0 +1,77 @@
+## 图片上加数字
+#-*- coding:utf-8 -*-
+myPath="./media/"
+fontPath="./media/"
+
+InputFile="aaa.jpg"
+outputFile="bbb.jpg"
+
+import Image,ImageFont,ImageDraw
+im = Image.open(myPath+InputFile)
+draw =ImageDraw.Draw(im)
+print im.size
+#根据图片大小确定字体大小
+fontsize = min(im.size)/4
+
+font = ImageFont.truetype(fontPath+'./KhmerOs.ttf',fontsize)
+draw.text((im.size[0]-fontsize),'8',font=font,fill=(256,0,0))
+im.save(myPath+outputFile,'jpeg')
+
+## 生成随机数
+#-*- coding:utf-8 -*-
+import string,random
+#激活码中的字符和数字
+field = string.letters + string.digits
+
+#获取四个字母和数字的随机组合
+def getRandom():
+    return "".join(random.sample(field,4))
+    
+#每个激活码中有几组
+def concatenate(group):
+    return "-".join([getRandom() for i in range(group)])
+    
+#生成n组激活码
+def generate(n):
+    return [concatenate(4) for i in n]
+    
+if __name__="__main__":
+    print generate(5)
+
+#-*- coding:utf-8 -*-  
+  
+## 统计单词
+import re
+from collections import Counter
+FileSource="./abc.txt"
+def getMostCommonWord(fileSource):
+    pattern = r'''[A-Za-z]+|\$?\d+%?$'''
+    with open(fileSource) as f :
+        r = re.findall(pattern,f.read())
+        return Counter(r).most_common()
+
+if __name__ == "__main__":
+    print getMostCommonWord(FileSource)
+    
+# 最重要的词（出现频次最高的词）
+import os,re
+FilePath='./'
+def getCounter(fileSource):
+    pattern = r'''[A-Za-z]+|\$?\d+%?$'''
+    with open(fileSource) as f :
+        r = re.findall(pattern,f.read())
+        return Counter(r)
+#过滤词
+stop_word = ['the','In','of','and','has','that','s','Is','are','a']
+def run(fileSource):
+    os.chdir(FilePath): #切换到目标文件目录
+    total_counter = Counter()
+    for i in os.listdir(os.getcwd()):
+        if os.path.splittext(i)[1] == '.txt':
+            total_counter += getCounter(i)
+
+    for i in stop_word:
+        total_counter[i]=0
+    print total_counter.most_common()[0][0]
+if __name__ == "__main__":
+    run(FilePath)

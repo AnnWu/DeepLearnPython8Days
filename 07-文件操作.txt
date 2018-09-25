@@ -1,0 +1,61 @@
+# 文件操作
+
+## 打印到屏幕
+使用print 
+python3中print (a) #需要括号
+## 读取键盘输入
+str=raw_input("prompt:")
+str=input()
+两者基本相同，但input会假设你的输入是一个有效的Python表达式，并返回运算后的值。如
+
+## 打开和关闭文件
+open()函数
+fp=open("hello.txt","w")#以写的方式打开文件
+fp.write("hello world Python")
+fp.close() # 关闭文件
+
+fp=open("hello.txt","r")
+fp.read()
+fp.close()
+fp.read()#这个时候报错
+fp.read(100)#读
+## File对象的属性
+fp.closed #文件是否关闭
+fp.mode #文件的访问模式
+**文件访问模式**
+r 只读
+w 只写，如果文件不存在则创建，如果文件存在，则截断文件
+a 追加写
+r+ 读写方式打开文件，文件不存在不创建，open时失败
+w+ 可读可写文件，如果文件不存在则创建，如果文件存在，则截断文件
+a+ 追加打开文件，可读可写文件，如果文件不存在则创建
+
+fp.name #
+fp.softspace #如果用print输出后，必须跟一个空格符则返回false,否则返回true
+## close()方法
+关闭时会刷新缓冲区且更新文件，关闭后不可再读写。
+## write()方法
+
+## read()方法
+fp.read()后读写指针的位置在文件的末尾
+
+## seek()方法
+fp.seek(0) # 将文件读写指针移动到开始位置
+fp.tell()
+## flush()方法 
+刷新缓冲区。一般write()后只在缓冲区，调用flush可刷新到文件(磁盘)中。当缓冲区满时（8192Byte）自动刷新。当文件关闭时自动刷新。
+
+## 重命名和删除文件
+使用os.rename()方法
+
+## Python中的目录
+
+## chdir()方法
+
+## getcwd()方法
+
+## rmdir()方法
+
+## 文件、目录相关的方法
+
+## Linux和Windows平台下的差异性

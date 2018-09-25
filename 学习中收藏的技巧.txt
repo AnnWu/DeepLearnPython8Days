@@ -1,0 +1,4 @@
+建议 阅读的书籍 
+
+python 核心编程
+python cookbook中文版

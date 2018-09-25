@@ -1,0 +1,45 @@
+# 字符串引号
+- 转义
+- 单引号，双引号，三引号
+
+# python访问和更新字符串中的值
+- 可使用分片访问
+- 字符串更新不是在原地更新，而是重新开辟一个空间，id会变化
+
+# python字符串运算符
+- 字符串连接 + ：a+b
+- 重复输出字符串 * ：a*2
+- 通过索引获取字符 []
+- 截取字符串中的一部分 [:]
+- in 成员运算符
+- 成员运算符 not in
+- 原始字符串：r/R （字符串直接按照字面的意思来使用，没有转义或不能打印的字符） 比如： print r('hello\n') #输出 hello\n
+
+# 字符串格式化
+- "%s , %d "%(a,b)
+
+# 字符串各种函数
+- 检测str是否包含在mystr中，返回开始的索引值，否则返回-1  mystr.find(str,start=0,end=len(mystr)) 
+- mystr.index() 和find()方法一样，但是str不在会报一个异常
+- mystr.count 参数和find()一样，str在mystr出现的次数
+- mystr.decode(encoding='UTF-8',errors='strict')按指定的编码格式解码 mystr ,如果出错默认报一个ValueError的异常
+- mystr.encode() 编码
+- mystr.replace(str1,str2,mystr.count(str1))
+- mystr.split(str="",2) 以str为分隔符切片mystr,如果maxsplit有指定值，则分割maxsplit个子字符串
+- mystr.capitalize() 将第一个字符大写
+- mystr.center(width) 返回一个原字符串居中
+- mystr.endswith()/ startswith()
+- mystr.expandtabs(tabsize=8) 把字符串中的tab符号转为空格，默认的空格数是8
+- mystr.isalnum() mystr至少有一个数字而且所有字符都是字母或者数字则返回True
+- mystr.isalpha()至少有一个字符而且所有字符都是字母（不包含数字和空格） 
+- mystr.isdecimal() 如果mystr只包含十进制数字
+- mystr.isdigit() 只包含数字
+- mystr.islower()/isupper() mystr.lower() mystr.upper()
+- mystr.isnumeric() 只包含数字字符
+- mystr.isspace()  mystr.istitle()
+- mystr.join(str) 每个字符后插入str
+- mystr.ljust(width) 左对齐  rjust(10)右对齐
+- mystr.lstrip()/rstrip() 去除字符串左边或者右边空格
+- mystr.partition(str) 把mystr以str分割成三部分
+- mystr.splitlines() 按行分割
+

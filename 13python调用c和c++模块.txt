@@ -1,0 +1,149 @@
+# 借力C/C++,提高程序性能，实现代码复用
+## 为什么要扩展python
+- 1.性能瓶颈的效率提升
+- 2.保持源代码的私密性，如加解密算法
+- 三大块：业务层逻辑使用python实现，复杂性/密集型计算性能瓶颈相关的（排序，数据结构）使用C/C++实现，存储（数据库-）也可以python
+## 创建python扩展流程
+- 1.创建C/C++功能代码
+- 2.python类型适配，包装C/C++代码
+- 3.编译与测试
+## C/C++ 版本的功能函数
+//源文件 testc.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+int fac(int n)
+{
+	if (n<2)
+		return 1;
+	return n*fac(n-1);
+}
+char *reverse(char *s)
+{ //原地替换
+	char t,*p=s, *q=(s+(strlen(s)-1));
+	while (s&& (p<q)){
+		t=*p;
+		*p++ = *q;
+		*q-- = t;	
+	}
+	return s;
+}
+//int main(void)
+int test(void)
+{
+	char s[1024];
+	printf("4! == %d\n",fac(4));
+	printf("8! == %d\n",fac(8));
+	strcpy(s,"abcdefg");
+	printf("reverse 'abcdefg'==%s\n",reverse(s));
+	return 0;
+}
+
+//头文件 testc.h
+#ifndef TESTC_H_
+#define TESTC_H_
+int fac(int n);
+char *reverse(char *s);
+int test(void);
+#endif
+
+编译测试，保证c代码的正确性，避免在python中调试C模块
+
+# 包裹函数wrapper(包裹模块作适配的作用)
+## 实现包裹 的4个步骤：
+- 1.包含Python.h头文件
+- 2.为每一个函数增加一个PyObject *Module_func()的包裹函数
+- 3.为模块增加一个PyMethodDef DefModuleMethods[]的数组
+- 4.增加模块的初始化函数 void initModule()
+  ** 包含Python.h头文件 **
+  c中包含头文件：#include "Python.h"
+  
+  ** 为每一个函数增加一个PyObject **
+  ** Module_func()的包裹函数 **
+  包裹函数的名字：模块名_函数名 如testc_fac()
+  python调用时：模块名.函数名
+  python到c，把python传过来的参数转为C的类型：
+  int PyArg_ParseTuple()
+  c到python，把C的数据转为python的一个或一组对象返回：
+  PyObject *Py_BuildValue()
+  |--格式代码--|--python类型--|--c类型--|
+  |-----|----|----|
+  s		str 	    char *
+  z		str/None    char */NULL
+  i 	int 	    int
+  l		long		long
+  c 	str			char
+  d		float		double
+  D 	complex		Py_Complex*
+  O		(any)		PyObject *
+  S		str			PyStringObject
+  
+  ** 为模块增加一个PyMethod DefModuleMethods[]的数组 **
+  函数声明数组=[函数1,函数2...]
+  static PyMethodDef testcMethods[]=
+  {{"fac",testc_fac,METH_VARARGS},
+   {"reverse",testc_reversee,METH_VARARGS},{NULL,NULL},
+  },
+  ** 函数初始化 **
+  void inittestc(void){
+	Py_InitModule("testc",testcMethods);
+  }
+  
+  //包裹模块实现代码testcwrapper.c如下：
+#include "Python.h"
+#include <stdlib.h>
+#include <string.h>
+#include "testc.h"   
+static PyObject *testc_fac(PyObject *self,PyObject *args)
+{
+	int num;
+	if(!PyArg_ParseTuple(args,"i",&num))
+		return NULL;
+	return (PyObject *)Py_BuildValue("i",fac(num));
+}
+static PyObject *testc_reversee(PyObject *self,PyObject *args)
+{
+	char *src;
+	char *mstr;
+	PyObject *retval;
+	if(!PyArg_ParseTuple(args,"s",&src))
+		return NULL;
+	mstr=malloc(strlen(src),&src);
+	strcpy(mstr,src);
+	reverse(mstr);
+	retval= (PyObject *)Py_BuildValue("ss",src,mstr);
+	free(mstr);
+	return retval;
+}
+static PyObject *testc_test(PyObject *self,PyObject *args)
+{
+	test();
+	
+	return (PyObject *)Py_BuildValue("");
+	
+}
+static PyMethodDef testcMethods[]=
+  {{"fac",testc_fac,METH_VARARGS},
+   {"reverse",testc_reversee,METH_VARARGS},
+   {"test",testc_test,METH_VARARGS},
+   {NULL,NULL},
+  }
+void inittestc(void){
+	Py_InitModule("testc",testcMethods);
+  }
+# 编译安装到python环境 
+- 1.创建setup.py
+- 2.运行setup.py编译和链接C的扩展代码
+- 3.从Python中导入模块
+- 4.测试
+## 创建setup.py
+为了能编译扩展，需要为每一个扩展创建一个Extension实例
+//setup.py
+from distutils.core import settup,Extension
+MOD ="testc"
+setup(name=MOD,ext_modules=[Extension(MOD,source=['testc.c','testcwrapper.c'])])
+
+## 运行setup.py编译和链接C的扩展代码
+python setup.py build
+python setup.py install ##安装后可以直接 import testc
+
