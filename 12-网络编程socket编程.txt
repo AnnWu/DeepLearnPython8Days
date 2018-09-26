@@ -1,0 +1,75 @@
+#-*- coding:utf-8 -*-
+# Socket原生网络库使用
+##server1:原始socket AIP
+from socket import *
+myhost = ''
+myport = 8080
+sockobj= socket(AF_INET,SOCK_STREAM)
+sockobj.bind((myhost,myport))
+sockobj.listen(128)
+while True:
+    connection,address = sockobj.accept()
+    print "connect by", address
+    while True:
+        data=connection.recv(1024)
+        if not data:
+            break
+        connection.send('echo:'+data)
+    connection.close()
+# 使用nc 127.0.0.1:8080 连接访问
+    
+### server2
+
+#-*- coding:utf-8 -*-
+from SocketServer import TCPServer,BaseRequestHandler
+import traceback
+class MyBaseRequestHandler(BaseRequestHandler):
+    '''
+    #从 BaseRequestHandler继承，并重写handle()方法
+    '''
+    def handle(self):
+        #循环监听（读取）来自客户端的数据
+        while True:
+            #当客户端主动断开连接时，self.recv(1024)会抛出异常
+            try:
+                data = self.request.recv(1024).strip()
+                print "receive from (%r):%r"%(self.client_address,data)#self.client_address,data是客户端的连接(host,port)的元组
+                self.request.sendall(data.upper()+'\n')
+            except:
+                traceback.print_exc()
+                break
+if __name__ == "__main__":
+    host = '' #主机名
+    port = 8080
+    addr = (host,port)
+    
+    #构造TCPServer 对象
+    server = TCPServer(addr,MyBaseRequestHandler)
+    #启动服务监听
+    server.serve_forever()
+    
+## server3 :多线程TCPServer
+from SocketServer import ThreadingTCPServer,StreamRequestHandler
+import traceback
+class MyStreamRequestHandler(StreamRequestHandler):
+    def handle(self):
+        #循环监听（读取）来自客户端的数据
+        while True:
+          
+            try:
+                data = self.rfile.readline().strip()
+                print "receive from (%r):%r"%(self.client_address,data)#self.client_address,data是客户端的连接(host,port)的元组
+                self.wfile.write(data.upper()+'\n')
+                #写回给客户端
+            except:
+                traceback.print_exc()
+                break
+if __name__ == "__main__":
+    host = '' #主机名
+    port = 8080
+    addr = (host,port)
+    
+    #构造TCPServer 对象
+    server = ThreadingTCPServer(addr,MyStreamRequestHandler)
+    #启动服务监听
+    server.serve_forever()

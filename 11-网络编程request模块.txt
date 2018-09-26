@@ -1,0 +1,61 @@
+#requests 网络库使用
+Requests支持HTTP连接保持和连接池，支持使用cookie保持回话，支持文件上传，支持自动确定响应内容的编码，支持国际化URL和Post数据自动编码。
+## 发送无参数的请求
+import requests
+r=requests.get('http://httpbin.org/get')
+# r.url
+# r.content #返回网页内容
+print r.text #提交的内容
+fp= open('abc.txt','w')
+fp.write(r.content)
+fp.close()
+
+## 发送带参数的请求
+
+import requests
+myp={'q':'Linux'}
+r = requests.get('http://haosou.com/s',params=myp)#会拼接参数
+r.url
+print r.content
+
+## 发送post请求，通过data参数来传递
+import requests
+mydata={'wd':'Linux','name':'xwp'}
+r = requests.post('http://httpbin.org/post',data=mydata)
+print r.text
+
+###get请求：下载网站内容，也可以往服务器提交数据，通过明文
+###post请求：提交表单给网站后台，不会体现在url中
+
+
+## 发送post请求，通过json参数来传递
+
+import requests
+import json
+mydata={'wd':'Linux','name':'xwp'}
+r = requests.post('http://httpbin.org/post',data=json.dumps(mydata)) #json.dumps(mydata)转为json格式数据
+print r.text
+
+## 上传文件
+import requests
+url='http://httpbin.org/post'
+files = ｛'file':open('abc.jpg','rb')｝
+r = requests.post(url,files=files)
+print r.text
+
+## 6、实战实例
+#-*- coding:utf-8 -*-
+import requests
+import re
+url = r''
+user={'email':'','password':''}
+s=requests.Session()
+r=s.post(url,data = user)
+
+html = r.text
+vm=s.get('http://www.renren.com/myfoot/whoSeenme')
+fm=re.compile(r'"name":"(.*?)"')
+visitmore=fm.findall(vm.text)
+for i in visitmore:
+    print i
+    
